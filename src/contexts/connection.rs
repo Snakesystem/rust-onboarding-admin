@@ -46,12 +46,13 @@ impl<'a> Drop for Transaction<'a> {
 
 /// Membuat pool koneksi database
 pub async fn create_pool(database: &str) -> Result<DbPool, Box<dyn std::error::Error + Send + Sync>> {
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL harus diatur");
     let database_user = env::var("DATABASE_USER").expect("DATABASE_USER harus diatur");
     let database_password = env::var("DATABASE_PASSWORD").expect("DATABASE_PASSWORD harus diatur");
 
     let connection_string = format!(
-        "Server=tcp:db12877.public.databaseasp.net;User={};Password={};TrustServerCertificate=true;Database={}",
-        database_user, database_password, database
+        "Server={};User={};Password={};TrustServerCertificate=true;Database={}",
+        database_url, database_user, database_password, database
     );
 
     let config = Config::from_ado_string(&connection_string)?;

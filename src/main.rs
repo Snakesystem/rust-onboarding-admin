@@ -1,9 +1,10 @@
 use actix_cors::Cors;
+use actix_files::Files;
 use actix_identity::IdentityMiddleware;
 use actix_session::{config::PersistentSession, storage::CookieSessionStore, SessionMiddleware};
 use actix_web::{ cookie::{time::Duration, Key}, get, http::{self}, middleware::{self}, web::{self, route}, App, HttpServer};
 use contexts::{connection::create_pool, logger::write_log};
-use handlers::{auth_handler::auth_scope, generic_handler::generic_scope, option_handler::option_scope, user_handler::user_scope};
+use handlers::{auth_handler::auth_scope, file_handler::file_scope, generic_handler::generic_scope, get_data_handler::get_data_scope, option_handler::option_scope, user_handler::user_scope};
 use log::info;
 use services::generic_service::{self};
 
@@ -20,6 +21,8 @@ mod handlers {
     pub mod generic_handler;
     pub mod option_handler;
     pub mod user_handler;
+    pub mod file_handler; 
+    pub mod get_data_handler;
 }
 
 mod services {
@@ -28,6 +31,8 @@ mod services {
     pub mod option_service;
     pub mod user_service;
     pub mod validation_service;
+    pub mod file_service;
+    pub mod get_data_service;
 }
 
 #[get("/")]
@@ -43,7 +48,7 @@ async fn main() -> std::io::Result<()> {
     let db_pool = create_pool("db12877").await.expect("Failed to create database pool");
 
     write_log("INFO", "Test log message: Logging is working");
-    info!("🚀 Application running on http://127.0.0.1:8000");
+    info!("🚀 Application running on http://127.0.0.1:8001");
     
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -59,6 +64,9 @@ async fn main() -> std::io::Result<()> {
             .service(generic_scope())
             .service(option_scope())
             .service(user_scope())
+            .service(file_scope())
+            .service(get_data_scope())
+            .service(Files::new("/static", "./static").show_files_listing()) // Static files di luar src/
         )
         .app_data(web::Data::new(db_pool.clone()))
         .app_data(web::JsonConfig::default().error_handler(generic_service::GenericService::json_error_handler))

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{header}}</title>
+    <link rel="stylesheet" href="{{url}}/static/css/style.css">
+</head>
+<body>
+    <h1>{{header}}</h1>
+
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Full Name</td>
+            <td>{{data.full_name}}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{data.email}}</td>
+        </tr>
+        <tr>
+            <td>Mobile Phone</td>
+            <td>{{data.mobile_phone}}</td>
+        </tr>
+        <tr>
+            <td>ID Card Number</td>
+            <td>{{data.idcard_number}}</td>
+        </tr>
+        <tr>
+            <td>ID Card Expiry</td>
+            <td>{{data.idcard_expire_date}}</td>
+        </tr>
+        <tr>
+            <td>Birth Place</td>
+            <td>{{data.birth_place}}</td>
+        </tr>
+        <tr>
+            <td>Birth Date</td>
+            <td>{{data.birth_date}}</td>
+        </tr>
+        <tr>
+            <td>Bank Name</td>
+            <td>{{data.bank_name}}</td>
+        </tr>
+        <tr>
+            <td>Bank Branch</td>
+            <td>{{data.bank_branch}}</td>
+        </tr>
+        <tr>
+            <td>Bank Account</td>
+            <td>{{data.bank_account_number}}</td>
+        </tr>
+        <tr>
+            <td>Account Holder</td>
+            <td>{{data.bank_account_holder}}</td>
+        </tr>
+        <tr>
+            <td>Company</td>
+            <td>{{data.company_name}}</td>
+        </tr>
+        <tr>
+            <td>ID Card File</td>
+            <td><img src="{{url}}/reports/file/{{data.idcard_file}}" alt="ID Card"></td>
+        </tr>
+        <tr>
+            <td>Selfie</td>
+            <td><img src="{{url}}/reports/file/{{data.selfie_file}}" alt="Selfie"></td>
+        </tr>
+        <tr>
+            <td>Signature</td>
+            <td><img src="{{url}}/reports/file/{{data.signature_file}}" alt="Signature"></td>
+        </tr>
+        <tr>
+            <td>NPWP File</td>
+            <td><img src="{{url}}/reports/file/{{data.npwp_file}}" alt="NPWP"></td>
+        </tr>
+    </table>
+</body>
+</html>

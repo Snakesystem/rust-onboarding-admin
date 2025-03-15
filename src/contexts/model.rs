@@ -49,7 +49,7 @@ pub struct RegisterRequest {
     pub app_ipaddress: String
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, Clone)]
 pub struct DataPribadiRequest {
     #[validate(custom(function = "required"), email(message = "Invalid email format"))]
     pub email: Option<String>,
@@ -86,8 +86,8 @@ pub struct DataPribadiRequest {
     #[validate(custom(function = "required_datetime"))]
     #[serde(deserialize_with  = "deserialize_date_only")]
     pub idcard_expireddate  : Option<DateTime<Utc>>,
-    #[validate(custom(function = "required_int"))]
-    pub idcard_country  : i32,
+    #[validate(custom(function = "required"))]
+    pub idcard_country: Option<String>,
 
     #[validate(custom(function = "validate_base64_image"))]
     pub idcard_file: String,
@@ -145,7 +145,7 @@ pub struct DataBankRequest {
     pub bank_branch: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Validate)]
+#[derive(Debug, Deserialize, Validate, Clone)]
 pub struct DataPekerjaanRequest {
     #[validate(custom(function = "required"))]
     pub company_name: Option<String>,
@@ -157,6 +157,8 @@ pub struct DataPekerjaanRequest {
     pub company_zipcode: Option<String>,
     #[validate(custom(function = "required_int"))]
     pub question_npwp: i32,
+    #[validate(custom(function = "validate_base64_image"))]
+    pub npwp_file: String,
     #[validate(custom(function = "required"))]
     pub npwp_reason: Option<String>,
     #[validate(custom(function = "required"), custom(function = "valid_number_card"))]
@@ -203,6 +205,45 @@ pub struct DataPekerjaanRequest {
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct DataPendukungRequest {
+    pub question_1: bool,
+    pub question_1text: Option<String>,
+
+    pub question_2: bool,
+    pub question_2text: Option<String>,
+
+    pub question_3: bool,
+    pub question_3text: Option<String>,
+
+    pub question_4: bool,
+    pub question_4text: Option<String>,
+
+    pub question_5: bool,
+    pub question_5text: Option<String>,
+
+    pub question_6: bool,
+    pub question_6text: Option<String>,
+
+    #[validate(custom(function = "required_int"))]
+    pub investment_objective: i32,
+    
+    #[validate(custom(function = "required_int"))]
+    pub risk: i32,
+    
+    #[validate(custom(function = "required"))]
+    pub question_fatca: Option<String>,
+    
+    #[validate(custom(function = "required"))]
+    pub fatca_1: Option<String>,
+    
+    #[validate(custom(function = "required"))]
+    pub fatca_2: Option<String>,
+    
+    #[validate(custom(function = "required"))]
+    pub fatca_3: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct DataBeneficiaryRequest {
     pub question_1: bool,
     pub question_1text: Option<String>,
 
@@ -291,13 +332,13 @@ pub struct WebUser {
 #[derive(Debug, Serialize, Clone)]
 pub struct UserInfo {
     pub autonid: i32,
-    pub stage: i16,
+    pub stage: i32,
     pub client_id: String,
     pub cif_id: String,
     pub is_revised: bool,
     pub is_rejected: bool,
     pub is_finished: bool,
-    pub account_status: String,
+    pub account_status: i32,
     pub mobile_phone: String,
     pub email: String,
     pub full_name: String,
@@ -305,7 +346,7 @@ pub struct UserInfo {
     pub spouse_name: String,
     pub mother_name: String,
     pub nationality: i32,
-    pub idcard_country: i32,
+    pub idcard_country: String,
     pub idcard_number: String,
     #[serde(serialize_with = "serialize_datetime")]
     pub idcard_expire_date: chrono::DateTime<Utc>,
@@ -313,7 +354,7 @@ pub struct UserInfo {
     pub birth_place: String,
     #[serde(serialize_with = "serialize_datetime")]
     pub birth_date: chrono::DateTime<Utc>,
-    pub birth_country: i32,
+    pub birth_country: String,
     pub religion: i32,
     pub marital_status: i32,
     pub education: i32,
@@ -341,7 +382,7 @@ pub struct UserInfo {
     pub npwp_number: String,
     pub npwp_reason: String,
     pub company_name: String,
-    pub fund_source: i32,
+    pub fund_source: String,
     pub fund_source_text: String,
     pub occupation: i32,
     pub occupation_text: String,
@@ -373,7 +414,7 @@ pub struct UserInfo {
     pub spouse_occupation_text: String,
     pub spouse_position: i32,
     pub spouse_nature_bussiness: i32,
-    pub spouse_fund_source: i32,
+    pub spouse_fund_source: String,
     pub spouse_fund_source_text: String,
     pub spouse_company_name: String,
     pub spouse_company_city: i32,
@@ -424,4 +465,30 @@ where
         return Ok(Some(datetime));
     }
     Ok(None)
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TableDataParams {
+    pub tablename: String,
+    pub limit: i32,
+    pub offset: i32,
+    pub filter: Option<String>,
+    pub sort: Option<String>,
+    pub order: Option<String>,
+    pub nidkey: Option<String>,
+    pub nidvalue: Option<String>,
+}
+
+#[derive(Debug)]
+pub struct QueryClass {
+    pub query: String,
+    pub query_total_all: String,
+    pub query_total_with_filter: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ResultList {
+    pub total_not_filtered: i32,
+    pub total: i32,
+    pub rows: Vec<serde_json::Value>, // Pastikan ini bisa dikonversi ke JSON
 }

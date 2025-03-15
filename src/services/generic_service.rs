@@ -2,6 +2,7 @@ use actix_web::{error, web, HttpRequest, HttpResponse, Responder, Result};
 use bb8::Pool;
 use bb8_tiberius::ConnectionManager;
 use serde_json::json;
+use sha2::{Digest, Sha256};
 use tiberius::QueryStream;
 use rand::{rng, Rng};
 
@@ -89,6 +90,33 @@ impl GenericService {
                 CHARS[idx] as char
             })
             .collect()
+    }
+
+    pub fn random_string_by_suffix(length: usize, suffix: &str, name: &str) -> String {
+        // Pastikan `name` memiliki panjang minimal 10 dengan padding
+        let padded_name = format!("{:0<10}", name); // Tambah nol jika kurang dari 10 karakter
+    
+        // Gabungkan suffix dan padded name
+        let input = format!("{}{}", suffix, padded_name);
+    
+        // Buat hash dari input
+        let mut hasher = Sha256::new();
+        hasher.update(input.as_bytes());
+        let hash_result = hasher.finalize();
+    
+        // Karakter yang diizinkan (huruf A-Z dan angka 0-9)
+        let alphanumeric_chars: Vec<char> = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".chars().collect();
+    
+        // Pastikan hasil string memiliki panjang yang sama persis dengan `length`
+        let hashed_string: String = hash_result.iter()
+            .flat_map(|&byte| vec![
+                alphanumeric_chars[(byte as usize) % alphanumeric_chars.len()],
+                alphanumeric_chars[((byte as usize) / 2) % alphanumeric_chars.len()]
+            ])
+            .take(length)
+            .collect();
+    
+        hashed_string
     }
 
     pub fn get_ip_address(req: &HttpRequest) -> String {
